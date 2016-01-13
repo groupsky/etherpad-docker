@@ -1,4 +1,4 @@
-{
+module.exports = {
   // Name your instance!
   "title": "Hackpad",
 
@@ -31,18 +31,11 @@
 
   //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
   //You shouldn't use "dirty" for for anything else than testing or development
-  "dbType" : "mysql",
+  "dbType" : "dirty",
   //the database specific settings
-  "dbSettings" : (function(url){
-    var u=require('url').parse(url);
-    return {
-      host: u.hostname||null,
-      port: u.port||null,
-      user: u.auth?(u.auth.split(':')[0]):null,
-      password: u.auth?(u.auth.split(':')[1]):null,
-      database: u.pathname.substr(1)
-    }
-    })(process.env.DATABASE_URL),
+  "dbSettings" : {
+    "filename": "/var/dirty.db"
+  },
 
   /* An Example of MySQL Configuration
    "dbType" : "mysql",
@@ -137,4 +130,18 @@
         }
       }*/
         ] }
-}
+};
+
+// parse the DATABASE_URL into
+(function(url){
+  var u=require('url').parse(url);
+  module.exports.dbType = u.protocol.slice(0, -1);
+  module.exports.dbSettings = {
+    host: u.hostname||null,
+    port: u.port||null,
+    user: u.auth?(u.auth.split(':')[0]):null,
+    password: u.auth?(u.auth.split(':')[1]):null,
+    database: u.pathname.substr(1),
+    dbname: u.pathname.substr(1),
+  }
+})(process.env.DATABASE_URL);

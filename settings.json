@@ -1,10 +1,10 @@
 {
   // Name your instance!
-  "title": "Etherpad",
+  "title": "Hackpad",
 
   // favicon default name
   // alternatively, set up a fully specified Url to your own favicon
-  "favicon": "favicon.ico",
+  "favicon": "http://hackafe.org/favicon.png",
 
   //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
@@ -13,7 +13,7 @@
   // Session Key, used for reconnecting user sessions
   // Set this to a secure string at least 10 characters long.  Do not share this value.
   // change this...
-  "sessionKey" : "1q2w3e4r5t",
+  "sessionKey" : process.env.SESSION_KEY || "-=blahblahHACKAFE!4theW1Nblahbla=-",
 
   /*
   // Node native SSL support
@@ -31,11 +31,18 @@
 
   //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
   //You shouldn't use "dirty" for for anything else than testing or development
-  "dbType" : "dirty",
+  "dbType" : "mysql",
   //the database specific settings
-  "dbSettings" : {
-                   "filename" : "var/dirty.db"
-                 },
+  "dbSettings" : (function(url){
+    var u=require('url').parse(url);
+    return {
+      host: u.hostname||null,
+      port: u.port||null,
+      user: u.auth?(u.auth.split(':')[0]):null,
+      password: u.auth?(u.auth.split(':')[1]):null,
+      database: u.pathname.substr(1)
+    }
+    })(process.env.DATABASE_URL),
 
   /* An Example of MySQL Configuration
    "dbType" : "mysql",
@@ -48,7 +55,7 @@
   */
 
   //the default text of a pad
-  "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
+  "defaultPadText" : "Welcome to Hackpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
 
   /* Users must have a session to access pads. This effectively allows only group pads to be accessed. */
   "requireSession" : false,
@@ -79,7 +86,7 @@
      If you do not uncomment this, /admin will not be available! */
   "users": {
     "admin": {
-      "password": "etherpad",
+      "password": process.env.ADMIN_PASSWORD,
       "is_admin": true
     }
   },
@@ -131,4 +138,3 @@
       }*/
         ] }
 }
-
